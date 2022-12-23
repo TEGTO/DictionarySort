@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
+public enum SortType
+{
+    FirstWord, SecondWord
+}
 namespace DictionarySort
 {
     /// <summary>
@@ -21,7 +16,8 @@ namespace DictionarySort
     /// </summary>
     public partial class MainWindow : Window
     {
-        string path = "Invalid Type";
+        string path;
+     
         public MainWindow()
         {
             InitializeComponent();
@@ -42,7 +38,14 @@ namespace DictionarySort
             layout2_DragLeave(sender, e);
             Label1.Content = path;
         }
-
+        public int DefineType() 
+        {
+            if ((bool)SecondType.IsChecked) 
+                return (int)SortType.SecondWord;
+            else
+                return (int)SortType.FirstWord;  
+        }
+    
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             List<string> list = new List<string>();
@@ -52,6 +55,7 @@ namespace DictionarySort
                 string ext = System.IO.Path.GetExtension(path);
                 if (ext!= ".txt")
                 {
+                    path =  "Invalid Type";
                     throw new InvalidOperationException("Invalid Type");
                 }
                 using (StreamReader reader = new StreamReader(path))
@@ -70,9 +74,10 @@ namespace DictionarySort
 
                 }
 
-                list.Sort();
-                list = list.Where(x => x != null).ToList();
-               
+                Sorting.Sort(ref list, DefineType());
+
+              
+
                 using (StreamWriter writer = new StreamWriter(path, false))
                 {
                     foreach (var item in list)
@@ -122,9 +127,27 @@ namespace DictionarySort
 
         private void layout2_DragLeave(object sender, DragEventArgs e)
         {
-            Label1.Content = "";
+            Label1.Content = path;
             layout2.Opacity =1;
         }
+        private void UncheckedAllExpectOne(object sender,GroupBox gB)
+        {
+            CheckBox checkBox = (CheckBox)sender; //check box that need to hold checked
+            foreach (var item in ((StackPanel)gB.Content).Children)
+            {
+                if (item is CheckBox && item != checkBox)
+                {
+                    CheckBox cb = (CheckBox)item;
+                    cb.IsChecked = false;
+                }
+            }
+        }
 
+        private void typeBoxes(object sender, RoutedEventArgs e)
+        {
+            UncheckedAllExpectOne(sender,GroupBoxType);
+          
+
+        }
     }
 }
