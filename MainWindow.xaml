@@ -13,22 +13,24 @@
             </Grid.Effect>
 
         </Grid>
-           
-        <Label x:Name="Label1" HorizontalAlignment="Left" Margin="0,155,0,0" VerticalAlignment="Top" Height="57" Width="377" FontFamily="Bahnschrift SemiBold" FontWeight="Bold" FontSize="16" AutomationProperties.IsRowHeader="True" Content="" FontStyle="Normal"/>
+
+        <Label x:Name="Label1" HorizontalAlignment="Center" Margin="0,155,0,0" VerticalAlignment="Top" Height="57" Width="380" FontFamily="Bahnschrift SemiBold" FontWeight="Bold" FontSize="16" AutomationProperties.IsRowHeader="True" Content="" FontStyle="Normal"/>
         <Grid x:Name="layout2" Visibility="Visible">
 
-           
+
             <Label x:Name="Type" HorizontalAlignment="Left" Margin="31,11,0,0" VerticalAlignment="Top" Height="33" Width="76" FontFamily="Bahnschrift SemiBold" FontSize="16" AutomationProperties.IsRowHeader="True" Content="Sort Type" FontWeight="Bold"/>
 
             <StackPanel x:Name="stackPanel1" AllowDrop="True" Drop="ImagePanel_Drop" GiveFeedback="ImagePanel_GiveFeedback" Margin="0,-11,0,0" Background="White" Opacity="0" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave" Visibility="Visible" />
-            <Button Content="SORT" HorizontalAlignment="Left" Margin="262,20,0,0" VerticalAlignment="Top" Height="48" Width="96" FontFamily="Agency FB" FontSize="18" FontWeight="Bold" Click="Button_Click" FontStyle="Normal" IsDefault="True" Background="#FFEDE3E3"/>
-          
             <GroupBox x:Name="GroupBoxType" Header="" BorderBrush="White">
                 <StackPanel>
                     <CheckBox x:Name="FirstType" Content="By The First Word" HorizontalAlignment="Left" Margin="30,20,0,0" VerticalAlignment="Top" BorderBrush="Black" Foreground="Black" Checked="typeBoxes"/>
                     <CheckBox x:Name="SecondType" Content="By The Second Word" BorderBrush="Black" Margin="30,2,0,0" Foreground="Black" Checked="typeBoxes"/>
                 </StackPanel>
             </GroupBox>
+            
+            
+            <Button Content="SORT" HorizontalAlignment="Left" Margin="262,20,0,0" VerticalAlignment="Top" Height="48" Width="96" FontFamily="Bahnschrift" FontSize="18" Click="Button_Click" FontStyle="Normal" IsDefault="True" Background="#FFF9F9F9" FontWeight="Bold" Foreground="#FF030303" BorderBrush="Black"/>
+            <CheckBox x:Name ="MakeCopyCheckBox" Content="Make a copy" HorizontalAlignment="Left" Margin="262,73,0,0" VerticalAlignment="Top" Checked="CopyCheckBox" Unchecked="CopyCheckBox"/>
         </Grid>
 
 

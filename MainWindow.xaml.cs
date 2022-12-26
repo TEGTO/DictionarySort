@@ -17,26 +17,34 @@ namespace DictionarySort
     public partial class MainWindow : Window
     {
         string path;
-     
+        bool copyMake=false;
         public MainWindow()
         {
             InitializeComponent();
         }
         private void ImagePanel_Drop(object sender, DragEventArgs e)
         {
-
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            try
             {
+                if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                {
                     string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                   
+
                     path = files[0];
-                   
-             
-                
+
+
+
+                }
+              
+                layout2_DragLeave(sender, e);
+                Label1.Content = copyMake && path != null ? Path.GetFileNameWithoutExtension(path) + " — copy" : Path.GetFileNameWithoutExtension(path);
             }
-        
-            layout2_DragLeave(sender, e);
-            Label1.Content = path;
+            catch (Exception ex)
+            {
+
+                Label1.Content = ex.Message;
+            }
+            
         }
         public int DefineType() 
         {
@@ -76,10 +84,15 @@ namespace DictionarySort
 
                 Sorting.Sort(ref list, DefineType());
 
-              
 
-                using (StreamWriter writer = new StreamWriter(path, false))
+                if (copyMake)
                 {
+                    path = path.Substring(0, path.Length - ext.Length)+ " — copy.txt";
+                }
+                   
+               
+                using (StreamWriter writer = new StreamWriter(path, false))
+                {     
                     foreach (var item in list)
                     {
                         writer.WriteLine(item);
@@ -132,7 +145,7 @@ namespace DictionarySort
         }
         private void UncheckedAllExpectOne(object sender,GroupBox gB)
         {
-            CheckBox checkBox = (CheckBox)sender; //check box that need to hold checked
+            CheckBox checkBox = (CheckBox)sender; //check box that need to hold checked status
             foreach (var item in ((StackPanel)gB.Content).Children)
             {
                 if (item is CheckBox && item != checkBox)
@@ -148,6 +161,12 @@ namespace DictionarySort
             UncheckedAllExpectOne(sender,GroupBoxType);
           
 
+        }
+
+        private void CopyCheckBox(object sender, RoutedEventArgs e)
+        {
+            copyMake = !copyMake;
+            Label1.Content = copyMake && path != null ? Path.GetFileNameWithoutExtension(path) + " — copy" : Path.GetFileNameWithoutExtension(path);
         }
     }
 }
