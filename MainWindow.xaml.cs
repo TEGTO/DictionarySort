@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Documents.Serialization;
 using System.Windows.Input;
+using System.Xaml;
+using static System.Net.Mime.MediaTypeNames;
 
 public enum SortType
 {
@@ -18,6 +23,8 @@ namespace DictionarySort
     {
         string path;
         bool copyMake=false;
+       
+        List<string> words;
         public MainWindow()
         {
             InitializeComponent();
@@ -37,6 +44,8 @@ namespace DictionarySort
                 }
               
                 layout2_DragLeave(sender, e);
+                FileRead();
+                WordsShow();
                 Label1.Content = copyMake && path != null ? Path.GetFileNameWithoutExtension(path) + " — copy" : Path.GetFileNameWithoutExtension(path);
             }
             catch (Exception ex)
@@ -53,37 +62,54 @@ namespace DictionarySort
             else
                 return (int)SortType.FirstWord;  
         }
-    
-        private void Button_Click(object sender, RoutedEventArgs e)
+        
+        void FileRead()
         {
-            List<string> list = new List<string>();
+            words = new List<string>();
             string line;
             try
             {
                 string ext = System.IO.Path.GetExtension(path);
-                if (ext!= ".txt")
+                if (ext != ".txt")
                 {
-                    path =  "Invalid Type";
+                    path = "Invalid Type";
                     throw new InvalidOperationException("Invalid Type");
                 }
                 using (StreamReader reader = new StreamReader(path))
                 {
                     line = reader.ReadLine();
-                    list.Add(line);
+                    words.Add(line);
                     while (line != null)
                     {
 
 
                         line = reader.ReadLine();
-                        list.Add(line);
-
-
+                        words.Add(line);
                     }
 
                 }
+                words = words.Where(x => x != "" && x != null).ToList();
+               
+            }
+            catch (Exception ex)
+            {
 
-                Sorting.Sort(ref list, DefineType());
-
+                Label1.Content = ex.Message;
+            }
+        }
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+           
+            try
+            {
+                string ext = System.IO.Path.GetExtension(path);
+                ListUpdateByTextBox();
+                Sorting.Sort(ref words, DefineType());
+                if (ext != ".txt")
+                {
+                    path = "Invalid Type";
+                    throw new InvalidOperationException("Invalid Type");
+                }
 
                 if (copyMake)
                 {
@@ -93,13 +119,14 @@ namespace DictionarySort
                
                 using (StreamWriter writer = new StreamWriter(path, false))
                 {     
-                    foreach (var item in list)
+                    foreach (var item in words)
                     {
                         writer.WriteLine(item);
 
                     }
 
                 }
+                WordsShow();
                 Label1.Content = "Words sort is successful";
             }
             catch (Exception ex)
@@ -140,7 +167,7 @@ namespace DictionarySort
 
         private void layout2_DragLeave(object sender, DragEventArgs e)
         {
-            Label1.Content = path;
+            Label1.Content = copyMake && path != null ? Path.GetFileNameWithoutExtension(path) + " — copy" : Path.GetFileNameWithoutExtension(path);
             layout2.Opacity =1;
         }
         private void UncheckedAllExpectOne(object sender,GroupBox gB)
@@ -155,8 +182,8 @@ namespace DictionarySort
                 }
             }
         }
-
-        private void typeBoxes(object sender, RoutedEventArgs e)
+      
+        private void TypeBoxes(object sender, RoutedEventArgs e)
         {
             UncheckedAllExpectOne(sender,GroupBoxType);
           
@@ -167,6 +194,45 @@ namespace DictionarySort
         {
             copyMake = !copyMake;
             Label1.Content = copyMake && path != null ? Path.GetFileNameWithoutExtension(path) + " — copy" : Path.GetFileNameWithoutExtension(path);
+        }
+
+        private void WordsShow()
+        {
+            int it = 0;
+            foreach (var item in (StackPanelWords).Children)
+            {
+                if (item is TextBox)
+                {
+                    TextBox tb = (TextBox)item;
+                    tb.Text = words[it];
+                    it++;
+                }
+            }
+            for (; it < words.Count(); it++)
+            {
+                TextBox tx = new TextBox();
+               
+                tx.Width = 220; tx.Height = 20;
+                tx.Margin = new Thickness(-90, 5, 0, 0);
+                tx.Text = words[it];
+               
+                StackPanelWords.Children.Add(tx);
+            }
+         
+        }
+
+        private void ListUpdateByTextBox()
+        {
+            int it = 0;
+            foreach (var item in (StackPanelWords).Children)
+            {
+                if (item is TextBox)
+                {
+                    TextBox tb = (TextBox)item;
+                    words[it] = tb.Text;
+                    it++;
+                }
+            }
         }
     }
 }

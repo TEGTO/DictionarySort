@@ -26,7 +26,7 @@ namespace DictionarySort
     {
       public static void Sort(ref List<string> list, int type)
         {
-            list = list.Where(x => x != ""&&x!=null).ToList();
+           
            
             switch (type)
             {
