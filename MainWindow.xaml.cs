@@ -23,6 +23,7 @@ namespace DictionarySort
     {
         string path;
         bool copyMake=false;
+        uint sortType = (int)SortType.FirstWord;
        
         List<string> words;
         public MainWindow()
@@ -55,13 +56,7 @@ namespace DictionarySort
             }
             
         }
-        public int DefineType() 
-        {
-            if ((bool)SecondType.IsChecked) 
-                return (int)SortType.SecondWord;
-            else
-                return (int)SortType.FirstWord;  
-        }
+      
         
         void FileRead()
         {
@@ -97,14 +92,32 @@ namespace DictionarySort
                 Label1.Content = ex.Message;
             }
         }
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void StartSorting()
         {
            
             try
             {
-                string ext = System.IO.Path.GetExtension(path);
+               
                 ListUpdateByTextBox();
-                Sorting.Sort(ref words, DefineType());
+                Sorting.Sort(ref words, sortType);
+                WordsShow();
+                
+            }
+            catch (Exception ex)
+            {
+           
+                Label1.Content = path == null? "File is empty. Enter the file.": ex.Message;
+            }
+
+        }
+
+        private void SaveFile(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string ext = System.IO.Path.GetExtension(path);
+               
+                
                 if (ext != ".txt")
                 {
                     path = "Invalid Type";
@@ -113,12 +126,12 @@ namespace DictionarySort
 
                 if (copyMake)
                 {
-                    path = path.Substring(0, path.Length - ext.Length)+ " — copy.txt";
+                    path = path.Substring(0, path.Length - ext.Length) + " — copy.txt";
                 }
-                   
-               
+
+
                 using (StreamWriter writer = new StreamWriter(path, false))
-                {     
+                {
                     foreach (var item in words)
                     {
                         writer.WriteLine(item);
@@ -131,18 +144,15 @@ namespace DictionarySort
             }
             catch (Exception ex)
             {
-           
+
                 Label1.Content = ex.Message;
             }
-
         }
-     
 
-      
 
-        
 
-        private void ImagePanel_GiveFeedback(object sender, GiveFeedbackEventArgs e)
+
+            private void ImagePanel_GiveFeedback(object sender, GiveFeedbackEventArgs e)
         {
             if (e.Effects == DragDropEffects.Copy)
             {
@@ -185,7 +195,7 @@ namespace DictionarySort
       
         private void TypeBoxes(object sender, RoutedEventArgs e)
         {
-            UncheckedAllExpectOne(sender,GroupBoxType);
+          //  UncheckedAllExpectOne(sender,GroupBoxType);
           
 
         }
@@ -208,7 +218,7 @@ namespace DictionarySort
                     it++;
                 }
             }
-            for (; it < words.Count(); it++)
+            for (; it < words?.Count(); it++)
             {
                 TextBox tx = new TextBox();
                
@@ -234,5 +244,25 @@ namespace DictionarySort
                 }
             }
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            sortType = (int)SortType.FirstWord;
+            SortByFirstWord.Content = Sorting.reverseSortFirst ? "↑" : "↓";
+            StartSorting();
+        
+
+
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            sortType = (int)SortType.SecondWord;
+            SortBySecondWord.Content = Sorting.reverseSortSecond ? "↑" : "↓";
+            StartSorting();
+           
+        }
+
+  
     }
 }

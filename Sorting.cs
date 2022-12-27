@@ -24,7 +24,9 @@ namespace DictionarySort
     }
     static class Sorting
     {
-      public static void Sort(ref List<string> list, int type)
+        static public bool reverseSortFirst = false;
+        static public bool reverseSortSecond = false;
+        public static void Sort(ref List<string> list, uint type)
         {
            
            
@@ -32,9 +34,11 @@ namespace DictionarySort
             {
                 case (int)SortType.FirstWord:
                     SortByFirstWord(ref list);
+                    reverseSortFirst = !reverseSortFirst;
                     break; 
                 case (int)SortType.SecondWord:
                     SortBySecondWord(ref list);
+                    reverseSortSecond = !reverseSortSecond;
                     break;
 
                 default:
@@ -42,7 +46,14 @@ namespace DictionarySort
             }
            
         }
-    private static void SortByFirstWord(ref List<string> list) => list.Sort();
+        private static void SortByFirstWord(ref List<string> list)
+        {
+            if (!reverseSortFirst)
+                list?.Sort((a, b) => a.CompareTo(b));
+            else
+                list?.Sort((a, b) => b.CompareTo(a));
+
+        }
 
     private static void SortBySecondWord(ref List<string> list)
         { 
@@ -50,14 +61,17 @@ namespace DictionarySort
             List<string> buffer = new List<string>(list);
             
            
-            for (int i = 0; i < buffer.Count; i++)
+            for (int i = 0; i < buffer?.Count; i++)
             {
                 buffer[i] = Regex.Replace(buffer[i], pattern, String.Empty);
             }
-            buffer.Sort();
-            for (int i = 0; i < buffer.Count; i++)
+            if (!reverseSortSecond)
+                buffer?.Sort((a, b) => a.CompareTo(b));
+            else
+                buffer?.Sort((a, b) => b.CompareTo(a));
+            for (int i = 0; i < buffer?.Count; i++)
             {
-                for (int j = 0; j < buffer.Count; j++)
+                for (int j = 0; j < buffer?.Count; j++)
                 {
                     if (buffer[i] == Regex.Replace(list[j], pattern, String.Empty))
                     {
