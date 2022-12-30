@@ -17,21 +17,21 @@
 
         <Label x:Name="WordsCountLabel" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,210,0,0"  Height="35" Width="160" FontFamily="Cascadia Code ExtraLight" AutomationProperties.IsRowHeader="True" Background="#FFF7F7F7" Content="Word Count: 0"/>
         <Label x:Name="PathLabel" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="158,210,0,0"  Height="35" Width="240" FontFamily="Cascadia Code ExtraLight" AutomationProperties.IsRowHeader="True"  Background="#FFF7F7F7"/>
-        <Grid x:Name="layout2" Visibility="Visible" >
+        <Grid MouseDown="OnMouseLeftButtonDown" x:Name="layout2" Visibility="Visible" >
 
             <StackPanel x:Name="stackPanel1" AllowDrop="True" Drop="ImagePanel_Drop" GiveFeedback="ImagePanel_GiveFeedback" Margin="0,-11,0,0" Background="White" Opacity="0" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave" Visibility="Visible" />
             <StackPanel AllowDrop="True" Drop="ImagePanel_Drop" GiveFeedback="ImagePanel_GiveFeedback" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave">
                 <Button x:Name="SortByFirstWord" HorizontalAlignment="Left" VerticalAlignment="Top" Width="90"  Margin="10,65,80,5"  Height="21" Click="SortByFirstWordButton" Content="↓" Background="#FFF7F7F7" FontSize="18" FontFamily="Britannic Bold" FontWeight="Bold" BorderBrush="Black"/>
                 <Button x:Name="SortBySecondWord"  HorizontalAlignment="Left" VerticalAlignment="Top" Width="90"  Margin="100,-26,0,0" Height="21" Click="SortBySecondWordButton" Content="↓" Background="#FFF7F7F7" FontSize="18" FontFamily="Britannic Bold" FontWeight="Bold" BorderBrush="Black"/>
-                <Button Content="-" Width="40" Height ="25" Margin="300,30,0,0" Background="#FFF7F7F7" BorderBrush="Black" FontFamily="Britannic Bold" FontWeight="Bold"/>
+                <Button Content="-" Width="40" Height ="25" Margin="300,30,0,0" Background="#FFF7F7F7" BorderBrush="Black" FontFamily="Britannic Bold" FontWeight="Bold" Click="RemoveWordButton"/>
                 <Button Content="+" Width="40" Height ="25" Margin="300,-70,0,0" Background="#FFF7F7F7" BorderBrush="Black" FontFamily="Britannic Bold" FontWeight="Bold" Click="AddWordButton"/>
             </StackPanel>
-            <StackPanel  AllowDrop="True" Drop="ImagePanel_Drop" GiveFeedback="ImagePanel_GiveFeedback" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave"  >
+            <StackPanel AllowDrop="True" Drop="ImagePanel_Drop" GiveFeedback="ImagePanel_GiveFeedback" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave"  >
 
-                <ScrollViewer  Margin="10,92,80,5" Height="109" Foreground="Black" >
+                <ScrollViewer Margin="10,92,80,5" Height="109" Foreground="Black" >
                     <StackPanel Background="Transparent" MouseDown="OnMouseLeftButtonDown" x:Name="StackPanelWords" Width="323"/>
                 </ScrollViewer>
-                <Border BorderBrush="Black" Background="Transparent" BorderThickness="1,1,1,1" Margin="9,-120,100,-5" Height="113" />
+                <Border BorderBrush="Black" BorderThickness="1,1,1,1" Margin="9,-120,100,-5" Height="113" />
             </StackPanel>
             <StackPanel AllowDrop="True" Drop="ImagePanel_Drop" GiveFeedback="ImagePanel_GiveFeedback" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave">
 

@@ -26,7 +26,7 @@ namespace DictionarySort
         string path;
         bool copyMake=false;
         uint sortType = (int)SortType.FirstWord;
-       
+        IInputElement lastFocusedTextBox;
         List<string> words;
      
 
@@ -226,11 +226,12 @@ namespace DictionarySort
             for (; it < words?.Count(); it++)
             {
                 TextBox tx = new TextBox();
-                tx.MouseDown += OnMouseLeftButtonDown;
+        
                 tx.Width = 220; tx.Height = 20;
                 tx.Margin = new Thickness(-90, 5, 0, 0);
                 tx.Text = words[it];
-              
+                tx.PreviewMouseDown += MouseDownTextBox;
+                tx.PreviewMouseUp += MouseDownTextBox;
                 StackPanelWords.Children.Add(tx);
             }
          
@@ -251,7 +252,7 @@ namespace DictionarySort
         }
         void LabelsFill()
         {
-            PathLabel.Content = copyMake && path != null ? System.IO.Path.GetFileNameWithoutExtension(path) + " — copy" : System.IO.Path.GetFileNameWithoutExtension(path);
+            PathLabel.Content = (copyMake && path != null ? System.IO.Path.GetFileNameWithoutExtension(path) + " — copy" : System.IO.Path.GetFileNameWithoutExtension(path));
             WordsCountLabel.Content = "Word Count: " + (words?.Count??0);
         }
         private void SortByFirstWordButton(object sender, RoutedEventArgs e)
@@ -288,19 +289,33 @@ namespace DictionarySort
                 PathLabel.Content =  "File is empty. Enter the file.";
 
         }
+        private void MouseDownTextBox(object sender, RoutedEventArgs e)
+        {
+            lastFocusedTextBox = FocusManager.GetFocusedElement(this);
+            if (lastFocusedTextBox != null)
+            {
+                TextBox tb = lastFocusedTextBox as TextBox;
+                if (tb !=null)
+                    PathLabel.Content = $"Selected: {tb?.Text}";
+
+            }
+        }
+      
+        private void RemoveWordButton(object sender, RoutedEventArgs e)
+        {
+            if (lastFocusedTextBox !=null)
+            {
+                TextBox tb = lastFocusedTextBox as TextBox;
+                words.Remove(tb.Text);
+                StackPanelWords.Children.Remove(tb);
+                LabelsFill();
+            }
+            
+        }
         private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            // Retrieve the coordinate of the mouse position.
-            Point pt = e.GetPosition((UIElement)sender);
-         
-            // Perform the hit test against a given portion of the visual object tree.
-            HitTestResult result = VisualTreeHelper.HitTest(layout1, pt);
-            PathLabel.Content = "Click";
-            if (result != null)
-            {
-             
-                PathLabel.Content= "Click";
-            }
+            lastFocusedTextBox = null;
+            LabelsFill();
         }
     }
 }
