@@ -29,7 +29,7 @@
             <StackPanel AllowDrop="True" Drop="ImagePanel_Drop" GiveFeedback="ImagePanel_GiveFeedback" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave"  >
 
                 <ScrollViewer Margin="10,92,80,5" Height="109" Foreground="Black" >
-                    <StackPanel Background="Transparent" MouseDown="OnMouseLeftButtonDown" x:Name="StackPanelWords" Width="323"/>
+                    <StackPanel Background="Transparent" MouseDown="OnMouseLeftButtonDown" KeyDown="CtrlDownTextBox" KeyUp="CtrlUpTextBox" x:Name="StackPanelWords" Width="323"/>
                 </ScrollViewer>
                 <Border BorderBrush="Black" BorderThickness="1,1,1,1" Margin="9,-120,100,-5" Height="113" />
             </StackPanel>

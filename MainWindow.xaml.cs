@@ -24,14 +24,16 @@ namespace DictionarySort
     public partial class MainWindow : Window
     {
         string path;
-        bool copyMake=false;
+        bool copyMake=false , ctrlIsPressed = false;
         uint sortType = (int)SortType.FirstWord;
         IInputElement lastFocusedTextBox;
+        IInputElement[] lastFocusedTextBoxes;
         List<string> words;
      
 
         public MainWindow()
         {
+            lastFocusedTextBoxes = new IInputElement[0];
             InitializeComponent();
         }
         private void ImagePanel_Drop(object sender, DragEventArgs e)
@@ -230,8 +232,10 @@ namespace DictionarySort
                 tx.Width = 220; tx.Height = 20;
                 tx.Margin = new Thickness(-90, 5, 0, 0);
                 tx.Text = words[it];
-                tx.PreviewMouseDown += MouseDownTextBox;
-                tx.PreviewMouseUp += MouseDownTextBox;
+            
+                tx.PreviewMouseUp += MouseUpTextBox;
+             
+
                 StackPanelWords.Children.Add(tx);
             }
          
@@ -289,21 +293,87 @@ namespace DictionarySort
                 PathLabel.Content =  "File is empty. Enter the file.";
 
         }
-        private void MouseDownTextBox(object sender, RoutedEventArgs e)
+        private void MouseUpTextBox(object sender, RoutedEventArgs e)
         {
-            lastFocusedTextBox = FocusManager.GetFocusedElement(this);
-            if (lastFocusedTextBox != null)
+            if (ctrlIsPressed)
             {
-                TextBox tb = lastFocusedTextBox as TextBox;
-                if (tb !=null)
-                    PathLabel.Content = $"Selected: {tb?.Text}";
+               
+                    lastFocusedTextBox = FocusManager.GetFocusedElement(this);
+                    TextBox tb = lastFocusedTextBox as TextBox;
+                    if(RemoveWordSelect(lastFocusedTextBox))
+                    {
+                    Array.Resize(ref lastFocusedTextBoxes, lastFocusedTextBoxes.Length + 1);
+                    lastFocusedTextBoxes[lastFocusedTextBoxes.Length - 1] = FocusManager.GetFocusedElement(this);
+                   
+                     
+                        tb.Background = (Brush)new BrushConverter().ConvertFrom("#FFDCD5D5");
+                  
+                    }
+                PathLabel.Content = $"Selected: {lastFocusedTextBoxes.Length} words";
+
+
 
             }
+            else
+            {
+                DeleteSelections();
+                lastFocusedTextBoxes = new IInputElement[0];
+                lastFocusedTextBox = FocusManager.GetFocusedElement(this);
+                if (lastFocusedTextBox != null)
+                {
+                    TextBox tb = lastFocusedTextBox as TextBox;
+                    if (tb != null)
+                        PathLabel.Content = $"Selected: {tb?.Text}";
+
+                }
+              
+            }
+           
         }
-      
+        private void CtrlDownTextBox(object sender, KeyEventArgs e) {
+            if (e.Key == Key.LeftCtrl) ctrlIsPressed = true;
+        }
+        private void CtrlUpTextBox(object sender, KeyEventArgs e) {
+            if (e.Key == Key.LeftCtrl) ctrlIsPressed = false;
+          
+        }
+        private bool RemoveWordSelect(IInputElement el)
+        {
+            if (lastFocusedTextBoxes.Any(x=> x ==el))
+            {
+                TextBox tb = el as TextBox;
+                tb.Background = (Brush)new BrushConverter().ConvertFrom("#FFFFFFFF");
+                lastFocusedTextBoxes = lastFocusedTextBoxes.Where(x => x != el).ToArray();
+                return false;
+            }
+            return true;
+        }
+        private void DeleteSelections()
+        {
+            foreach (var item in StackPanelWords.Children)
+            {
+                if (item is TextBox)
+                {
+                    TextBox tb = (TextBox)item;  
+                    tb.Background = (Brush)new BrushConverter().ConvertFrom("#FFFFFFFF");
+                }
+            }
+        }
         private void RemoveWordButton(object sender, RoutedEventArgs e)
         {
-            if (lastFocusedTextBox !=null)
+            if (lastFocusedTextBoxes.Length >0)
+            {
+                TextBox tb;
+                foreach (var word in lastFocusedTextBoxes)
+                {
+                    tb = word as TextBox;
+                    words.Remove(tb.Text);
+                    StackPanelWords.Children.Remove(tb);
+                   
+                }
+                LabelsFill();
+            }
+            else if (lastFocusedTextBox !=null)
             {
                 TextBox tb = lastFocusedTextBox as TextBox;
                 words.Remove(tb.Text);
@@ -315,7 +385,9 @@ namespace DictionarySort
         private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             lastFocusedTextBox = null;
+            lastFocusedTextBoxes = new IInputElement[0];
             LabelsFill();
+            DeleteSelections();
         }
     }
 }
