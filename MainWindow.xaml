@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DictionarySort"
         mc:Ignorable="d"
-        Title="Dictionary Sort" Height="250" Width="400">
+        ResizeMode="NoResize"
+        Title="Dictionary Sort" Height="270" Width="400">
     <Grid x:Name="layout1">
         <Grid>
             <Grid.Effect>
@@ -14,24 +15,29 @@
 
         </Grid>
 
-        <Label x:Name="Label1" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Height="57" Width="380" FontFamily="Bahnschrift SemiBold" FontWeight="Bold" FontSize="16" AutomationProperties.IsRowHeader="True" Content="" FontStyle="Normal"/>
-        <Grid x:Name="layout2" Visibility="Visible">
+        <Label x:Name="WordsCountLabel" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,210,0,0"  Height="35" Width="160" FontFamily="Cascadia Code ExtraLight" AutomationProperties.IsRowHeader="True" Background="#FFF7F7F7" Content="Word Count: 0"/>
+        <Label x:Name="PathLabel" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="158,210,0,0"  Height="35" Width="240" FontFamily="Cascadia Code ExtraLight" AutomationProperties.IsRowHeader="True"  Background="#FFF7F7F7"/>
+        <Grid x:Name="layout2" Visibility="Visible" >
 
             <StackPanel x:Name="stackPanel1" AllowDrop="True" Drop="ImagePanel_Drop" GiveFeedback="ImagePanel_GiveFeedback" Margin="0,-11,0,0" Background="White" Opacity="0" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave" Visibility="Visible" />
             <StackPanel AllowDrop="True" Drop="ImagePanel_Drop" GiveFeedback="ImagePanel_GiveFeedback" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave">
-                <Button x:Name="SortByFirstWord" Width="30"  Margin="-250,68,80,5"  Height="21" Click="Button_Click" Content="↓" Background="#FFF7F7F7" FontSize="18" FontFamily="Britannic Bold" FontWeight="Bold"/>
-                <Button x:Name="SortBySecondWord"  Width="30"  Margin="-150,-30,0,0" Height="22" Click="Button_Click_1" Content="↓" Background="#FFF7F7F7" FontSize="18" FontFamily="Britannic Bold" FontWeight="Bold"/>
+                <Button x:Name="SortByFirstWord" HorizontalAlignment="Left" VerticalAlignment="Top" Width="90"  Margin="10,65,80,5"  Height="21" Click="SortByFirstWordButton" Content="↓" Background="#FFF7F7F7" FontSize="18" FontFamily="Britannic Bold" FontWeight="Bold" BorderBrush="Black"/>
+                <Button x:Name="SortBySecondWord"  HorizontalAlignment="Left" VerticalAlignment="Top" Width="90"  Margin="100,-26,0,0" Height="21" Click="SortBySecondWordButton" Content="↓" Background="#FFF7F7F7" FontSize="18" FontFamily="Britannic Bold" FontWeight="Bold" BorderBrush="Black"/>
+                <Button Content="-" Width="40" Height ="25" Margin="300,30,0,0" Background="#FFF7F7F7" BorderBrush="Black" FontFamily="Britannic Bold" FontWeight="Bold"/>
+                <Button Content="+" Width="40" Height ="25" Margin="300,-70,0,0" Background="#FFF7F7F7" BorderBrush="Black" FontFamily="Britannic Bold" FontWeight="Bold" Click="AddWordButton"/>
             </StackPanel>
-            <StackPanel AllowDrop="True" Drop="ImagePanel_Drop" GiveFeedback="ImagePanel_GiveFeedback" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave">
-                <ScrollViewer Margin="10,90,80,5" Height="109">
-                    <StackPanel x:Name="StackPanelWords" Width="323"/>
+            <StackPanel  AllowDrop="True" Drop="ImagePanel_Drop" GiveFeedback="ImagePanel_GiveFeedback" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave"  >
 
+                <ScrollViewer  Margin="10,92,80,5" Height="109" Foreground="Black" >
+                    <StackPanel Background="Transparent" MouseDown="OnMouseLeftButtonDown" x:Name="StackPanelWords" Width="323"/>
                 </ScrollViewer>
+                <Border BorderBrush="Black" Background="Transparent" BorderThickness="1,1,1,1" Margin="9,-120,100,-5" Height="113" />
             </StackPanel>
             <StackPanel AllowDrop="True" Drop="ImagePanel_Drop" GiveFeedback="ImagePanel_GiveFeedback" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave">
 
-                <Button Content="Button" Margin="290,25,0,0" Width="86" Height="28" Click="SaveFile" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                <CheckBox x:Name ="MakeCopyCheckBox" Content="Make a copy" HorizontalAlignment="Left" Margin="290,5,0,0" VerticalAlignment="Top" Checked="CopyCheckBox" Unchecked="CopyCheckBox"/>
+                <Button Content="Button" Margin="290,25,0,0" Width="50" Height="28" Click="SaveFile" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FFF7F7F7" BorderBrush="Black"/>
+                <Button Content="Button" Margin="350,-25,0,0" Width="25" Height="20"  HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FFF7F7F7" BorderBrush="Black"/>
+                <CheckBox x:Name ="MakeCopyCheckBox" Content="Make a copy" HorizontalAlignment="Left" Margin="290,5,0,0" VerticalAlignment="Top" Checked="CopyCheckBox" Unchecked="CopyCheckBox" BorderBrush="Black" Background="#FFFCFCFC" Foreground="Black"/>
             </StackPanel>
         </Grid>
 

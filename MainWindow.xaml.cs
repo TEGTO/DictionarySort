@@ -7,6 +7,8 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Documents.Serialization;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Shapes;
 using System.Xaml;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -26,6 +28,8 @@ namespace DictionarySort
         uint sortType = (int)SortType.FirstWord;
        
         List<string> words;
+     
+
         public MainWindow()
         {
             InitializeComponent();
@@ -47,12 +51,12 @@ namespace DictionarySort
                 layout2_DragLeave(sender, e);
                 FileRead();
                 WordsShow();
-                Label1.Content = copyMake && path != null ? Path.GetFileNameWithoutExtension(path) + " — copy" : Path.GetFileNameWithoutExtension(path);
+               
             }
             catch (Exception ex)
             {
 
-                Label1.Content = ex.Message;
+                PathLabel.Content = ex.Message;
             }
             
         }
@@ -89,7 +93,7 @@ namespace DictionarySort
             catch (Exception ex)
             {
 
-                Label1.Content = ex.Message;
+                PathLabel.Content = ex.Message;
             }
         }
         private void StartSorting()
@@ -106,7 +110,7 @@ namespace DictionarySort
             catch (Exception ex)
             {
            
-                Label1.Content = path == null? "File is empty. Enter the file.": ex.Message;
+                PathLabel.Content = path == null? "File is empty. Enter the file.": ex.Message;
             }
 
         }
@@ -140,19 +144,19 @@ namespace DictionarySort
 
                 }
                 WordsShow();
-                Label1.Content = "Words sort is successful";
+                PathLabel.Content = "Words sort is successful";
             }
             catch (Exception ex)
             {
 
-                Label1.Content = ex.Message;
+                PathLabel.Content = ex.Message;
             }
         }
 
 
 
 
-            private void ImagePanel_GiveFeedback(object sender, GiveFeedbackEventArgs e)
+       private void ImagePanel_GiveFeedback(object sender, GiveFeedbackEventArgs e)
         {
             if (e.Effects == DragDropEffects.Copy)
             {
@@ -172,12 +176,12 @@ namespace DictionarySort
 
             layout2.Opacity = 0.5;      
             e.Effects = DragDropEffects.None; 
-            Label1.Content = "DROP IT";
+            PathLabel.Content = "DROP IT";
         }
 
         private void layout2_DragLeave(object sender, DragEventArgs e)
         {
-            Label1.Content = copyMake && path != null ? Path.GetFileNameWithoutExtension(path) + " — copy" : Path.GetFileNameWithoutExtension(path);
+            LabelsFill();
             layout2.Opacity =1;
         }
         private void UncheckedAllExpectOne(object sender,GroupBox gB)
@@ -203,12 +207,13 @@ namespace DictionarySort
         private void CopyCheckBox(object sender, RoutedEventArgs e)
         {
             copyMake = !copyMake;
-            Label1.Content = copyMake && path != null ? Path.GetFileNameWithoutExtension(path) + " — copy" : Path.GetFileNameWithoutExtension(path);
+            LabelsFill();
         }
 
         private void WordsShow()
         {
             int it = 0;
+            LabelsFill();
             foreach (var item in (StackPanelWords).Children)
             {
                 if (item is TextBox)
@@ -221,11 +226,11 @@ namespace DictionarySort
             for (; it < words?.Count(); it++)
             {
                 TextBox tx = new TextBox();
-               
+                tx.MouseDown += OnMouseLeftButtonDown;
                 tx.Width = 220; tx.Height = 20;
                 tx.Margin = new Thickness(-90, 5, 0, 0);
                 tx.Text = words[it];
-               
+              
                 StackPanelWords.Children.Add(tx);
             }
          
@@ -244,8 +249,12 @@ namespace DictionarySort
                 }
             }
         }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
+        void LabelsFill()
+        {
+            PathLabel.Content = copyMake && path != null ? System.IO.Path.GetFileNameWithoutExtension(path) + " — copy" : System.IO.Path.GetFileNameWithoutExtension(path);
+            WordsCountLabel.Content = "Word Count: " + (words?.Count??0);
+        }
+        private void SortByFirstWordButton(object sender, RoutedEventArgs e)
         {
             sortType = (int)SortType.FirstWord;
             SortByFirstWord.Content = Sorting.reverseSortFirst ? "↑" : "↓";
@@ -255,7 +264,7 @@ namespace DictionarySort
 
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void SortBySecondWordButton(object sender, RoutedEventArgs e)
         {
             sortType = (int)SortType.SecondWord;
             SortBySecondWord.Content = Sorting.reverseSortSecond ? "↑" : "↓";
@@ -263,6 +272,35 @@ namespace DictionarySort
            
         }
 
-  
+        private void AddWordButton(object sender, RoutedEventArgs e)
+        {
+            if (path!=null)
+            {
+                TextBox tx = new TextBox();
+                tx.Width = 220; tx.Height = 20;
+                tx.Margin = new Thickness(-90, 5, 0, 0);
+                tx.Text = "";
+                words.Add(tx.Text);
+                StackPanelWords.Children.Add(tx);
+                LabelsFill();
+            }
+            else
+                PathLabel.Content =  "File is empty. Enter the file.";
+
+        }
+        private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            // Retrieve the coordinate of the mouse position.
+            Point pt = e.GetPosition((UIElement)sender);
+         
+            // Perform the hit test against a given portion of the visual object tree.
+            HitTestResult result = VisualTreeHelper.HitTest(layout1, pt);
+            PathLabel.Content = "Click";
+            if (result != null)
+            {
+             
+                PathLabel.Content= "Click";
+            }
+        }
     }
 }
