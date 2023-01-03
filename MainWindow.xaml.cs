@@ -24,7 +24,7 @@ namespace DictionarySort
     public partial class MainWindow : Window
     {
         string path;
-        bool copyMake=false , ctrlIsPressed = false;
+        bool copyMake=false , ctrlIsPressed = false, shiftIsPressed = false;
         uint sortType = (int)SortType.FirstWord;
         IInputElement lastFocusedTextBox;
         IInputElement[] lastFocusedTextBoxes;
@@ -122,18 +122,17 @@ namespace DictionarySort
             try
             {
                 string ext = System.IO.Path.GetExtension(path);
-               
-                
+
                 if (ext != ".txt")
                 {
                     path = "Invalid Type";
                     throw new InvalidOperationException("Invalid Type");
                 }
 
-                if (copyMake)
-                {
-                    path = path.Substring(0, path.Length - ext.Length) + " — copy.txt";
-                }
+                //if (copyMake)
+                //{
+                //    path = path.Substring(0, path.Length - ext.Length) + " — copy.txt";
+                //}
 
 
                 using (StreamWriter writer = new StreamWriter(path, false))
@@ -146,7 +145,7 @@ namespace DictionarySort
 
                 }
                 WordsShow();
-                PathLabel.Content = "Words sort is successful";
+                PathLabel.Content = "File is Saved";
             }
             catch (Exception ex)
             {
@@ -154,7 +153,10 @@ namespace DictionarySort
                 PathLabel.Content = ex.Message;
             }
         }
+        private void SaveFileAs(object sender, RoutedEventArgs e)
+        {
 
+        }
 
 
 
@@ -302,11 +304,9 @@ namespace DictionarySort
                     TextBox tb = lastFocusedTextBox as TextBox;
                     if(RemoveWordSelect(lastFocusedTextBox))
                     {
-                    Array.Resize(ref lastFocusedTextBoxes, lastFocusedTextBoxes.Length + 1);
-                    lastFocusedTextBoxes[lastFocusedTextBoxes.Length - 1] = FocusManager.GetFocusedElement(this);
-                   
-                     
-                        tb.Background = (Brush)new BrushConverter().ConvertFrom("#FFDCD5D5");
+                        Array.Resize(ref lastFocusedTextBoxes, lastFocusedTextBoxes.Length + 1);
+                        lastFocusedTextBoxes[lastFocusedTextBoxes.Length - 1] = FocusManager.GetFocusedElement(this);
+                        tb.Background = (Brush)new BrushConverter().ConvertFrom("#FF99C9EF");
                   
                     }
                 PathLabel.Content = $"Selected: {lastFocusedTextBoxes.Length} words";
@@ -318,28 +318,101 @@ namespace DictionarySort
             {
                 DeleteSelections();
                 lastFocusedTextBoxes = new IInputElement[0];
-                lastFocusedTextBox = FocusManager.GetFocusedElement(this);
-                if (lastFocusedTextBox != null)
+                if (!ShiftSelection(sender,e))
                 {
-                    TextBox tb = lastFocusedTextBox as TextBox;
-                    if (tb != null)
-                        PathLabel.Content = $"Selected: {tb?.Text}";
+                  
+                    lastFocusedTextBox = FocusManager.GetFocusedElement(this);
+                    if (lastFocusedTextBox != null)
+                    {
+                        TextBox tb = lastFocusedTextBox as TextBox;
+                        if (tb != null)
+                            PathLabel.Content = $"Selected: {tb?.Text}";
 
+                    }
                 }
+                else
+                      PathLabel.Content = $"Selected: {lastFocusedTextBoxes.Length} words";
+            
+                  
+                
+                
               
             }
            
         }
-        private void CtrlDownTextBox(object sender, KeyEventArgs e) {
-            if (e.Key == Key.LeftCtrl) ctrlIsPressed = true;
+        private bool ShiftSelection(object sender, RoutedEventArgs e)
+        {
+            if (shiftIsPressed&&lastFocusedTextBox !=null)
+            {
+                TextBox lastFocusedElement = lastFocusedTextBox as TextBox;
+               
+             
+        
+                bool check = false, check1 = false;
+                foreach (var item in (StackPanelWords).Children)
+                {
+                    if (item is TextBox)
+                    {
+                        TextBox tb = (TextBox)item;
+                        if (tb == lastFocusedElement || tb == FocusManager.GetFocusedElement(this) as TextBox)
+                        {
+                            check = true;
+                            check1 = lastFocusedTextBox == FocusManager.GetFocusedElement(this)?false: !check1; 
+                        }
+                                       
+                    
+                        if (check)
+                        {
+                            
+                                Array.Resize(ref lastFocusedTextBoxes, lastFocusedTextBoxes.Length + 1);
+                                lastFocusedTextBoxes[lastFocusedTextBoxes.Length - 1] = (IInputElement)tb;
+                                tb.Background = (Brush)new BrushConverter().ConvertFrom("#FF99C9EF");
+                            
+                        }
+                        if ((tb == FocusManager.GetFocusedElement(this) as TextBox || tb == lastFocusedElement) && check&&!check1) break;
+                       
+                    }
+                    
+                }
+              
+                return lastFocusedTextBoxes.Length > 0;
+            }
+            else
+            {
+                return false;
+            }
+            
         }
-        private void CtrlUpTextBox(object sender, KeyEventArgs e) {
-            if (e.Key == Key.LeftCtrl) ctrlIsPressed = false;
-          
+        private void KeyDownTextBox(object sender, KeyEventArgs e) {
+            switch (e.Key)
+            {
+                case Key.LeftCtrl:
+                    ctrlIsPressed = true;
+                    break;
+                case Key.LeftShift:
+                    shiftIsPressed = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+        private void KeyUpTextBox(object sender, KeyEventArgs e) {
+            switch (e.Key)
+            {
+                case Key.LeftCtrl:
+                    ctrlIsPressed = false;
+                    break;
+                case Key.LeftShift: 
+                    shiftIsPressed = false;
+                    break;
+                default:
+                    break;
+            }      
+
         }
         private bool RemoveWordSelect(IInputElement el)
         {
-            if (lastFocusedTextBoxes.Any(x=> x ==el))
+            if (lastFocusedTextBoxes.Any(x=>x==el))
             {
                 TextBox tb = el as TextBox;
                 tb.Background = (Brush)new BrushConverter().ConvertFrom("#FFFFFFFF");
