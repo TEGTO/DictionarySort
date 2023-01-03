@@ -307,6 +307,7 @@ namespace DictionarySort
                         Array.Resize(ref lastFocusedTextBoxes, lastFocusedTextBoxes.Length + 1);
                         lastFocusedTextBoxes[lastFocusedTextBoxes.Length - 1] = FocusManager.GetFocusedElement(this);
                         tb.Background = (Brush)new BrushConverter().ConvertFrom("#FF99C9EF");
+
                   
                     }
                 PathLabel.Content = $"Selected: {lastFocusedTextBoxes.Length} words";
@@ -445,6 +446,7 @@ namespace DictionarySort
                    
                 }
                 LabelsFill();
+               
             }
             else if (lastFocusedTextBox !=null)
             {
