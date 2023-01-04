@@ -26,18 +26,18 @@ namespace DictionarySort
     {
         static public bool reverseSortFirst = false;
         static public bool reverseSortSecond = false;
-        public static void Sort(ref List<string> list, uint type)
+        public static void sort(ref List<string> list, uint type)
         {
            
            
             switch (type)
             {
                 case (int)SortType.FirstWord:
-                    SortByFirstWord(ref list);
+                    sortByFirstWord(ref list);
                     reverseSortFirst = !reverseSortFirst;
                     break; 
                 case (int)SortType.SecondWord:
-                    SortBySecondWord(ref list);
+                    sortBySecondWord(ref list);
                     reverseSortSecond = !reverseSortSecond;
                     break;
 
@@ -46,7 +46,7 @@ namespace DictionarySort
             }
            
         }
-        private static void SortByFirstWord(ref List<string> list)
+        private static void sortByFirstWord(ref List<string> list)
         {
             if (!reverseSortFirst)
                 list?.Sort((a, b) => a.CompareTo(b));
@@ -55,16 +55,16 @@ namespace DictionarySort
 
         }
 
-    private static void SortBySecondWord(ref List<string> list)
+    private static void sortBySecondWord(ref List<string> list)
         { 
             string pattern = @".*\- *";
-            List<string> buffer = new List<string>(list);
-            
-           
-            for (int i = 0; i < buffer?.Count; i++)
+            List<string> buffer = new List<string>();
+
+            foreach (var item in list)
             {
-                buffer[i] = Regex.Replace(buffer[i], pattern, String.Empty);
+                buffer.Add(Regex.Replace(item, pattern, String.Empty));
             }
+          
             if (!reverseSortSecond)
                 buffer?.Sort((a, b) => a.CompareTo(b));
             else

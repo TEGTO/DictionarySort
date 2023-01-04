@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -24,19 +26,23 @@ namespace DictionarySort
     public partial class MainWindow : Window
     {
         string path;
-        bool copyMake=false , ctrlIsPressed = false, shiftIsPressed = false;
+        bool copyMake=false , ctrlIsPressed = false, shiftIsPressed = false, isFileChanged =false;
         uint sortType = (int)SortType.FirstWord;
         IInputElement lastFocusedTextBox;
         IInputElement[] lastFocusedTextBoxes;
         List<string> words;
-     
+        
 
         public MainWindow()
         {
+            words = new List<string>();
             lastFocusedTextBoxes = new IInputElement[0];
             InitializeComponent();
+          
         }
-        private void ImagePanel_Drop(object sender, DragEventArgs e)
+
+        //File Read Functions 
+        private void dragDrop(object sender, DragEventArgs e)
         {
             try
             {
@@ -51,8 +57,8 @@ namespace DictionarySort
                 }
               
                 layout2_DragLeave(sender, e);
-                FileRead();
-                WordsShow();
+                fileRead();
+                wordsShow();
                
             }
             catch (Exception ex)
@@ -62,9 +68,26 @@ namespace DictionarySort
             }
             
         }
-      
-        
-        void FileRead()
+        private void openFileDialog(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                openFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
+                openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                if (openFileDialog.ShowDialog() == true)
+                    path = openFileDialog.FileName;
+                fileRead();
+                wordsShow();
+            }
+            catch (Exception ex)
+            {
+                PathLabel.Content = ex.Message;
+               
+            }
+          
+        }
+        void fileRead()
         {
             words = new List<string>();
             string line;
@@ -98,31 +121,20 @@ namespace DictionarySort
                 PathLabel.Content = ex.Message;
             }
         }
-        private void StartSorting()
-        {
-           
-            try
-            {
-               
-                ListUpdateByTextBox();
-                Sorting.Sort(ref words, sortType);
-                WordsShow();
-                
-            }
-            catch (Exception ex)
-            {
-           
-                PathLabel.Content = path == null? "File is empty. Enter the file.": ex.Message;
-            }
 
-        }
-
-        private void SaveFile(object sender, RoutedEventArgs e)
+        //File Save Functions
+        private void saveFile(object sender, RoutedEventArgs e)
         {
             try
             {
+                listUpdateByTextBox();
+                if (path == null || path?.Length <= 0)
+                {
+                    saveFileDialog(sender, e);
+                    return;
+                }
                 string ext = System.IO.Path.GetExtension(path);
-
+              
                 if (ext != ".txt")
                 {
                     path = "Invalid Type";
@@ -144,7 +156,8 @@ namespace DictionarySort
                     }
 
                 }
-                WordsShow();
+                wordsShow();
+                isFileChanged = false;
                 PathLabel.Content = "File is Saved";
             }
             catch (Exception ex)
@@ -153,71 +166,79 @@ namespace DictionarySort
                 PathLabel.Content = ex.Message;
             }
         }
-        private void SaveFileAs(object sender, RoutedEventArgs e)
+        private void saveFileDialog(object sender, RoutedEventArgs e)
         {
-
-        }
-
-
-
-       private void ImagePanel_GiveFeedback(object sender, GiveFeedbackEventArgs e)
-        {
-            if (e.Effects == DragDropEffects.Copy)
+            try
             {
-                e.UseDefaultCursors = false;
-                Mouse.SetCursor(Cursors.Hand);
-            }
-            else
-                e.UseDefaultCursors = true;
-
-            e.Handled = true;
-        }
-
-     
-
-        private void layout2_DragEnter(object sender, DragEventArgs e)
-        {
-
-            layout2.Opacity = 0.5;      
-            e.Effects = DragDropEffects.None; 
-            PathLabel.Content = "DROP IT";
-        }
-
-        private void layout2_DragLeave(object sender, DragEventArgs e)
-        {
-            LabelsFill();
-            layout2.Opacity =1;
-        }
-        private void UncheckedAllExpectOne(object sender,GroupBox gB)
-        {
-            CheckBox checkBox = (CheckBox)sender; //check box that need to hold checked status
-            foreach (var item in ((StackPanel)gB.Content).Children)
-            {
-                if (item is CheckBox && item != checkBox)
+                listUpdateByTextBox();
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Filter = "Text file (*.txt)|*.txt";
+                saveFileDialog.InitialDirectory=path?.Length>0&&path!=null ?path : Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                if (saveFileDialog.ShowDialog() == true)
                 {
-                    CheckBox cb = (CheckBox)item;
-                    cb.IsChecked = false;
+                    path = saveFileDialog.FileName;
+                    string ext = System.IO.Path.GetExtension(saveFileDialog.FileName);
+
+                    if (ext != ".txt")
+                    {
+                        path = "Invalid Type";
+                        throw new InvalidOperationException("Invalid Type");
+                    }
+
+                    using (StreamWriter writer = new StreamWriter(path, false))
+                    {
+                        foreach (var item in words)
+                        {
+                            writer.WriteLine(item);
+
+                        }
+
+                    }
+                    wordsShow();
+                    PathLabel.Content = "File is Saved";
+                    isFileChanged = false;
+
+
+
+
                 }
             }
-        }
-      
-        private void TypeBoxes(object sender, RoutedEventArgs e)
-        {
-          //  UncheckedAllExpectOne(sender,GroupBoxType);
+            catch (Exception ex)
+            {
+
+                PathLabel.Content = ex.Message;
+            }
           
-
         }
 
-        private void CopyCheckBox(object sender, RoutedEventArgs e)
+        //Sorting & Showing Functions 
+        private void startSorting()
         {
-            copyMake = !copyMake;
-            LabelsFill();
-        }
+           
+            try
+            {
+              
+                if (words.Count<=0)
+                {
+                    throw new InvalidOperationException("Error");
+                }
+                isFileChanged = true;
+                listUpdateByTextBox();
+                Sorting.sort(ref words, sortType);
+                wordsShow();
+                
+            }
+            catch (Exception ex)
+            {
+           
+                PathLabel.Content = path == null || words.Count <= 0? "File is empty. Enter the file.": ex.Message;
+            }
 
-        private void WordsShow()
+        }
+        private void wordsShow()
         {
             int it = 0;
-            LabelsFill();
+            labelsFill();
             foreach (var item in (StackPanelWords).Children)
             {
                 if (item is TextBox)
@@ -229,21 +250,23 @@ namespace DictionarySort
             }
             for (; it < words?.Count(); it++)
             {
-                TextBox tx = new TextBox();
-        
-                tx.Width = 220; tx.Height = 20;
-                tx.Margin = new Thickness(-90, 5, 0, 0);
+                TextBox tx = addNewTextBox();
                 tx.Text = words[it];
-            
-                tx.PreviewMouseUp += MouseUpTextBox;
-             
-
                 StackPanelWords.Children.Add(tx);
             }
-         
-        }
 
-        private void ListUpdateByTextBox()
+        }
+        TextBox addNewTextBox()
+        {
+            TextBox tx = new TextBox();
+
+            tx.Width = 220; tx.Height = 20;
+            tx.Margin = new Thickness(-90, 5, 0, 0);
+            tx.PreviewMouseUp += mouseUpTextBox;
+            tx.TextChanged += textChangedEventHandler;
+            return tx;
+        }
+        private void listUpdateByTextBox()
         {
             int it = 0;
             foreach (var item in (StackPanelWords).Children)
@@ -256,53 +279,144 @@ namespace DictionarySort
                 }
             }
         }
-        void LabelsFill()
+        void labelsFill()
         {
             PathLabel.Content = (copyMake && path != null ? System.IO.Path.GetFileNameWithoutExtension(path) + " — copy" : System.IO.Path.GetFileNameWithoutExtension(path));
             WordsCountLabel.Content = "Word Count: " + (words?.Count??0);
         }
-        private void SortByFirstWordButton(object sender, RoutedEventArgs e)
+        private void sortByWordButton(object sender, RoutedEventArgs e)
         {
-            sortType = (int)SortType.FirstWord;
-            SortByFirstWord.Content = Sorting.reverseSortFirst ? "↑" : "↓";
-            StartSorting();
-        
-
-
-        }
-
-        private void SortBySecondWordButton(object sender, RoutedEventArgs e)
-        {
-            sortType = (int)SortType.SecondWord;
-            SortBySecondWord.Content = Sorting.reverseSortSecond ? "↑" : "↓";
-            StartSorting();
-           
-        }
-
-        private void AddWordButton(object sender, RoutedEventArgs e)
-        {
-            if (path!=null)
+         
+            if (sender == SortByFirstWord)
             {
-                TextBox tx = new TextBox();
-                tx.Width = 220; tx.Height = 20;
-                tx.Margin = new Thickness(-90, 5, 0, 0);
-                tx.Text = "";
-                words.Add(tx.Text);
-                StackPanelWords.Children.Add(tx);
-                LabelsFill();
+                sortType = (int)SortType.FirstWord;
+                SortByFirstWord.Content = Sorting.reverseSortFirst ? "↑" : "↓";
             }
             else
-                PathLabel.Content =  "File is empty. Enter the file.";
+            {
+                sortType = (int)SortType.SecondWord;
+                SortBySecondWord.Content = Sorting.reverseSortSecond ? "↑" : "↓";
+            }
+            startSorting();
+        }
+
+
+        private void addWordButton(object sender, RoutedEventArgs e)
+        {
+            isFileChanged = true;
+            TextBox tx = addNewTextBox();
+                tx.Text = "";        
+                words.Add(tx.Text);
+                StackPanelWords.Children.Add(tx);
+                labelsFill();
+           
 
         }
-        private void MouseUpTextBox(object sender, RoutedEventArgs e)
+        private void removeWordButton(object sender, RoutedEventArgs e)
+        {
+
+            if (lastFocusedTextBoxes.Length > 0)
+            {
+                isFileChanged = true;
+                TextBox tb;
+                foreach (var word in lastFocusedTextBoxes)
+                {
+                    tb = word as TextBox;
+                    words.Remove(tb.Text);
+                    StackPanelWords.Children.Remove(tb);
+
+                }
+                labelsFill();
+
+            }
+            else if (lastFocusedTextBox != null)
+            {
+                isFileChanged = true;
+                TextBox tb = lastFocusedTextBox as TextBox;
+                words.Remove(tb.Text);
+                StackPanelWords.Children.Remove(tb);
+                labelsFill();
+            }
+
+        }
+
+        private void newFileButton(object sender, RoutedEventArgs e)
+        {
+            path = String.Empty;
+            words = new List<string>();
+            lastFocusedTextBoxes = new IInputElement[0];
+            lastFocusedTextBox = null;
+            StackPanelWords.Children.Clear();
+            PathLabel.Content = path;
+            WordsCountLabel.Content = "Words Count: "+words.Count;
+            wordsShow();
+        }
+
+        //Visuals Functions
+       private void imagePanel_GiveFeedback(object sender, GiveFeedbackEventArgs e)
+        {
+            if (e.Effects == DragDropEffects.Copy)
+            {
+                e.UseDefaultCursors = false;
+                Mouse.SetCursor(Cursors.Hand);
+            }
+            else
+                e.UseDefaultCursors = true;
+
+            e.Handled = true;
+        }
+
+        private void layout2_DragEnter(object sender, DragEventArgs e)
+        {
+
+            layout2.Opacity = 0.5;      
+            e.Effects = DragDropEffects.None; 
+            PathLabel.Content = "DROP IT";
+        }
+
+        private void layout2_DragLeave(object sender, DragEventArgs e)
+        {
+            labelsFill();
+            layout2.Opacity =1;
+        }
+        private void uncheckedAllExpectOne(object sender,GroupBox gB)
+        {
+            CheckBox checkBox = (CheckBox)sender; //check box that need to hold checked status
+            foreach (var item in ((StackPanel)gB.Content).Children)
+            {
+                if (item is CheckBox && item != checkBox)
+                {
+                    CheckBox cb = (CheckBox)item;
+                    cb.IsChecked = false;
+                }
+            }
+        }
+      
+        private void typeBoxes(object sender, RoutedEventArgs e)
+        {
+          //  UncheckedAllExpectOne(sender,GroupBoxType);
+          
+
+        }
+
+        private void copyCheckBox(object sender, RoutedEventArgs e)
+        {
+            copyMake = !copyMake;
+            labelsFill();
+        }
+
+        private void textChangedEventHandler(object sender, TextChangedEventArgs args)
+        {
+            isFileChanged = true;
+        }
+        private void mouseUpTextBox(object sender, RoutedEventArgs e)
         {
             if (ctrlIsPressed)
             {
                
                     lastFocusedTextBox = FocusManager.GetFocusedElement(this);
                     TextBox tb = lastFocusedTextBox as TextBox;
-                    if(RemoveWordSelect(lastFocusedTextBox))
+                    if(removeWordSelect(lastFocusedTextBox))
                     {
                         Array.Resize(ref lastFocusedTextBoxes, lastFocusedTextBoxes.Length + 1);
                         lastFocusedTextBoxes[lastFocusedTextBoxes.Length - 1] = FocusManager.GetFocusedElement(this);
@@ -317,9 +431,9 @@ namespace DictionarySort
             }
             else
             {
-                DeleteSelections();
+                deleteSelections();
                 lastFocusedTextBoxes = new IInputElement[0];
-                if (!ShiftSelection(sender,e))
+                if (!shiftSelection(sender,e))
                 {
                   
                     lastFocusedTextBox = FocusManager.GetFocusedElement(this);
@@ -341,7 +455,7 @@ namespace DictionarySort
             }
            
         }
-        private bool ShiftSelection(object sender, RoutedEventArgs e)
+        private bool shiftSelection(object sender, RoutedEventArgs e)
         {
             if (shiftIsPressed&&lastFocusedTextBox !=null)
             {
@@ -384,7 +498,7 @@ namespace DictionarySort
             }
             
         }
-        private void KeyDownTextBox(object sender, KeyEventArgs e) {
+        private void keyDownTextBox(object sender, KeyEventArgs e) {
             switch (e.Key)
             {
                 case Key.LeftCtrl:
@@ -397,7 +511,7 @@ namespace DictionarySort
                     break;
             }
         }
-        private void KeyUpTextBox(object sender, KeyEventArgs e) {
+        private void keyUpTextBox(object sender, KeyEventArgs e) {
             switch (e.Key)
             {
                 case Key.LeftCtrl:
@@ -411,7 +525,7 @@ namespace DictionarySort
             }      
 
         }
-        private bool RemoveWordSelect(IInputElement el)
+        private bool removeWordSelect(IInputElement el)
         {
             if (lastFocusedTextBoxes.Any(x=>x==el))
             {
@@ -422,7 +536,7 @@ namespace DictionarySort
             }
             return true;
         }
-        private void DeleteSelections()
+        private void deleteSelections()
         {
             foreach (var item in StackPanelWords.Children)
             {
@@ -433,36 +547,47 @@ namespace DictionarySort
                 }
             }
         }
-        private void RemoveWordButton(object sender, RoutedEventArgs e)
-        {
-            if (lastFocusedTextBoxes.Length >0)
-            {
-                TextBox tb;
-                foreach (var word in lastFocusedTextBoxes)
-                {
-                    tb = word as TextBox;
-                    words.Remove(tb.Text);
-                    StackPanelWords.Children.Remove(tb);
-                   
-                }
-                LabelsFill();
-               
-            }
-            else if (lastFocusedTextBox !=null)
-            {
-                TextBox tb = lastFocusedTextBox as TextBox;
-                words.Remove(tb.Text);
-                StackPanelWords.Children.Remove(tb);
-                LabelsFill();
-            }
-            
-        }
-        private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+   
+        private void onMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             lastFocusedTextBox = null;
             lastFocusedTextBoxes = new IInputElement[0];
-            LabelsFill();
-            DeleteSelections();
+            labelsFill();
+            deleteSelections();
         }
+        //Exit Function
+        bool closingApp(object sender)
+        {
+            if (isFileChanged)
+            {
+                RoutedEventArgs e = new RoutedEventArgs();
+                MessageBoxResult saveFileMessage = MessageBox.Show("Do you want to save the file before exiting?", Title, MessageBoxButton.YesNoCancel);
+                switch (saveFileMessage)
+                {
+                    case MessageBoxResult.Yes:
+                        saveFile(sender,e);
+                        break;
+                    case MessageBoxResult.No: 
+                        break;
+                    case MessageBoxResult.Cancel:
+                        return false;
+                        break;
+                }
+            }
+           
+            System.Windows.Application.Current.Shutdown();
+            return true;
+        }
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
+            if (!closingApp(e))
+            {
+                e.Cancel = true;
+            }
+          
+        
+        }
+        private void exitFromApplication(object sender, RoutedEventArgs e)=> closingApp(sender);
     }
+  
 }

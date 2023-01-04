@@ -10,12 +10,12 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top" Margin="0,0,0,0" Height="27" Background="#FFF7F7F7" FontSize="14" BorderThickness="0,1,0,9" BorderBrush="Black">
             <MenuItem Header="  _File" FontFamily="Calibri" Width="50"  Margin="1,0,0,0" BorderBrush="Black" BorderThickness="0,0,1,0">
-                <MenuItem Header="_New" />
-                <MenuItem Header="_Open" />
-                <MenuItem Header="_Save" Click="SaveFile" />
-                <MenuItem Header="_Save As" />
+                <MenuItem Header="_New" Click="newFileButton"/>
+                <MenuItem Header="_Open" Click="openFileDialog" />
+                <MenuItem Header="_Save" Click="saveFile" />
+                <MenuItem Header="_Save As" Click="saveFileDialog"/>
                 <Separator />
-                <MenuItem Header="_Exit" />
+                <MenuItem Header="_Exit" Click="exitFromApplication"/>
             </MenuItem>
 
         </Menu>
@@ -25,28 +25,28 @@
 
             <Label x:Name="WordsCountLabel" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,210,0,0"  Height="35" Width="160" FontFamily="Cascadia Code ExtraLight" AutomationProperties.IsRowHeader="True" Background="#FFF7F7F7" Content="Word Count: 0"/>
             <Label x:Name="PathLabel" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="158,210,0,0"  Height="35" Width="240" FontFamily="Cascadia Code ExtraLight" AutomationProperties.IsRowHeader="True"  Background="#FFF7F7F7"/>
-            <Grid MouseDown="OnMouseLeftButtonDown" x:Name="layout2" Visibility="Visible" >
+            <Grid MouseDown="onMouseLeftButtonDown" x:Name="layout2" Visibility="Visible" >
 
 
 
 
-                <StackPanel x:Name="stackPanel1" AllowDrop="True" Drop="ImagePanel_Drop" GiveFeedback="ImagePanel_GiveFeedback" Margin="0,-11,0,0" Background="White" Opacity="0" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave" Visibility="Visible" />
-                <StackPanel AllowDrop="True" Drop="ImagePanel_Drop" GiveFeedback="ImagePanel_GiveFeedback" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave">
-                    <Button x:Name="SortByFirstWord" HorizontalAlignment="Left" VerticalAlignment="Top" Width="90"  Margin="10,65,80,5"  Height="21" Click="SortByFirstWordButton" Content="↓" Background="#FFF7F7F7" FontSize="18" FontFamily="Britannic Bold" FontWeight="Bold" BorderBrush="Black"/>
-                    <Button x:Name="SortBySecondWord"  HorizontalAlignment="Left" VerticalAlignment="Top" Width="90"  Margin="100,-26,0,0" Height="21" Click="SortBySecondWordButton" Content="↓" Background="#FFF7F7F7" FontSize="18" FontFamily="Britannic Bold" FontWeight="Bold" BorderBrush="Black"/>
-                    <Button Content="-" Width="40" Height ="25" Margin="300,30,0,0" Background="#FFF7F7F7" BorderBrush="Black" FontFamily="Britannic Bold" FontWeight="Bold" Click="RemoveWordButton"/>
-                    <Button Content="+" Width="40" Height ="25" Margin="300,-70,0,0" Background="#FFF7F7F7" BorderBrush="Black" FontFamily="Britannic Bold" FontWeight="Bold" Click="AddWordButton"/>
+                <StackPanel x:Name="stackPanel1" AllowDrop="True" Drop="dragDrop" GiveFeedback="imagePanel_GiveFeedback" Margin="0,-11,0,0" Background="White" Opacity="0" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave" Visibility="Visible" />
+                <StackPanel AllowDrop="True" Drop="dragDrop" GiveFeedback="imagePanel_GiveFeedback" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave">
+                    <Button x:Name="SortByFirstWord" HorizontalAlignment="Left" VerticalAlignment="Top" Width="90"  Margin="10,65,80,5"  Height="21" Click="sortByWordButton" Content="↓" Background="#FFF7F7F7" FontSize="18" FontFamily="Britannic Bold" FontWeight="Bold" BorderBrush="Black"/>
+                    <Button x:Name="SortBySecondWord"  HorizontalAlignment="Left" VerticalAlignment="Top" Width="90"  Margin="100,-26,0,0" Height="21" Click="sortByWordButton" Content="↓" Background="#FFF7F7F7" FontSize="18" FontFamily="Britannic Bold" FontWeight="Bold" BorderBrush="Black"/>
+                    <Button Content="-" Width="40" Height ="25" Margin="300,30,0,0" Background="#FFF7F7F7" BorderBrush="Black" FontFamily="Britannic Bold" FontWeight="Bold" Click="removeWordButton"/>
+                    <Button Content="+" Width="40" Height ="25" Margin="300,-70,0,0" Background="#FFF7F7F7" BorderBrush="Black" FontFamily="Britannic Bold" FontWeight="Bold" Click="addWordButton"/>
                 </StackPanel>
-                <StackPanel AllowDrop="True" Drop="ImagePanel_Drop" GiveFeedback="ImagePanel_GiveFeedback" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave"  >
+                <StackPanel AllowDrop="True" Drop="dragDrop" GiveFeedback="imagePanel_GiveFeedback" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave"  >
 
                     <ScrollViewer Margin="10,92,80,5" Height="109" Foreground="Black" >
-                        <StackPanel Background="Transparent" MouseDown="OnMouseLeftButtonDown" KeyDown="KeyDownTextBox" KeyUp="KeyUpTextBox" x:Name="StackPanelWords" Width="323"/>
+                        <StackPanel Background="Transparent" MouseDown="onMouseLeftButtonDown" KeyDown="keyDownTextBox" KeyUp="keyUpTextBox" x:Name="StackPanelWords" Width="323"/>
                     </ScrollViewer>
                     <Border BorderBrush="Black" BorderThickness="1,1,1,1" Margin="9,-120,100,-5" Height="113" />
                 </StackPanel>
-                <StackPanel AllowDrop="True" Drop="ImagePanel_Drop" GiveFeedback="ImagePanel_GiveFeedback" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave">
+                <StackPanel AllowDrop="True" Drop="dragDrop" GiveFeedback="imagePanel_GiveFeedback" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave">
 
-                    <Button  Margin="0,25,18,0" Width="50" Height="35" Click="SaveFile" HorizontalAlignment="Right"  VerticalAlignment="Top" BorderBrush="#FF4F83D1">
+                    <Button  Margin="0,25,18,0" Width="50" Height="35" Click="saveFile" HorizontalAlignment="Right"  VerticalAlignment="Top" BorderBrush="#FF4F83D1">
                         <Image Source="Resources\disckett.png"></Image>
                     </Button>
                 </StackPanel>
