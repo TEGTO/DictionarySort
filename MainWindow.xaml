@@ -27,6 +27,7 @@
                         <Image Source="Resources\open-folder.png" />
                     </MenuItem.Icon>
                 </MenuItem>
+                <MenuItem x:Name="PathSave" Header="_Remember File Path" IsCheckable="True" IsChecked="True" StaysOpenOnClick="True"/>
                 <MenuItem Header="_Save" Click="saveFile" >
                     <MenuItem.Icon>
                         <Image Source="Resources\save16.png" />

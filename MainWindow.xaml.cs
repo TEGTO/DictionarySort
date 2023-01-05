@@ -38,10 +38,33 @@ namespace DictionarySort
             words = new List<string>();
             lastFocusedTextBoxes = new IInputElement[0];
             InitializeComponent();
-          
+            PathSaveRead();
+
+
         }
 
         //File Read Functions 
+        void PathSaveRead()
+        {
+            if (File.Exists("filePath.txt"))
+            {
+                using (StreamReader reader = new StreamReader("filePath.txt"))
+                {
+                    bool.TryParse(reader.ReadLine(), out bool r);
+                    PathSave.IsChecked = r;
+                    if (PathSave.IsChecked)
+                    {
+                        path = reader.ReadLine();
+                        if (path?.Length > 0)
+                        {
+                            fileRead();
+                            wordsShow();
+                        }
+
+                    }
+                }
+            }
+        }
         private void dragDrop(object sender, DragEventArgs e)
         {
             try
@@ -403,10 +426,8 @@ namespace DictionarySort
             labelsFill();
         }
 
-        private void textChangedEventHandler(object sender, TextChangedEventArgs args)
-        {
-            isFileChanged = true;
-        }
+        private void textChangedEventHandler(object sender, TextChangedEventArgs args) => isFileChanged = true;
+        
         private void mouseUpTextBox(object sender, RoutedEventArgs e)
         {
             if (ctrlIsPressed)
@@ -573,6 +594,14 @@ namespace DictionarySort
                 }
             }
            
+                using (StreamWriter writer = new StreamWriter("filePath.txt", false))
+                {
+                writer.WriteLine(PathSave.IsChecked.ToString());
+                if (PathSave.IsChecked)        
+                    writer.WriteLine(path);
+                 
+                }
+           
             System.Windows.Application.Current.Shutdown();
             return true;
         }
@@ -585,7 +614,7 @@ namespace DictionarySort
           
         
         }
-        private void exitFromApplication(object sender, RoutedEventArgs e)=> closingApp(sender);
+        private void exitFromApplication(object sender, RoutedEventArgs e) => closingApp(sender);
     }
   
 }
