@@ -250,16 +250,15 @@ namespace DictionarySort
             }
             for (; it < words?.Count(); it++)
             {
-                TextBox tx = addNewTextBox();
-                tx.Text = words[it];
+                TextBox tx = addNewTextBox(words[it]);       
                 StackPanelWords.Children.Add(tx);
             }
 
         }
-        TextBox addNewTextBox()
+        TextBox addNewTextBox(string text)
         {
             TextBox tx = new TextBox();
-
+            tx.Text = text;
             tx.Width = 220; tx.Height = 20;
             tx.Margin = new Thickness(-90, 5, 0, 0);
             tx.PreviewMouseUp += mouseUpTextBox;
@@ -304,8 +303,7 @@ namespace DictionarySort
         private void addWordButton(object sender, RoutedEventArgs e)
         {
             isFileChanged = true;
-            TextBox tx = addNewTextBox();
-                tx.Text = "";        
+                TextBox tx = addNewTextBox("");        
                 words.Add(tx.Text);
                 StackPanelWords.Children.Add(tx);
                 labelsFill();

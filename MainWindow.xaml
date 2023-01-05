@@ -5,17 +5,44 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DictionarySort"
         mc:Ignorable="d"
-        ResizeMode="NoResize"
-        Title="Dictionary Sort" Height="290" Width="400">
+       
+        Title="Dictionary Sort" Height="290" Width="400"
+       ShowInTaskbar="True"
+      ResizeMode="CanMinimize"
+        WindowStartupLocation="CenterScreen">
+
+
+
     <DockPanel>
         <Menu DockPanel.Dock="Top" Margin="0,0,0,0" Height="27" Background="#FFF7F7F7" FontSize="14" BorderThickness="0,1,0,9" BorderBrush="Black">
-            <MenuItem Header="  _File" FontFamily="Calibri" Width="50"  Margin="1,0,0,0" BorderBrush="Black" BorderThickness="0,0,1,0">
-                <MenuItem Header="_New" Click="newFileButton"/>
-                <MenuItem Header="_Open" Click="openFileDialog" />
-                <MenuItem Header="_Save" Click="saveFile" />
-                <MenuItem Header="_Save As" Click="saveFileDialog"/>
+            <MenuItem Header="  _File" FontFamily="Calibri" Width="50"  Margin="1,0,0,0"  BorderBrush="Black" BorderThickness="0,0,1,0" >
+              
+                <MenuItem Header="_New" Click="newFileButton">
+                    <MenuItem.Icon>
+                        <Image Source="Resources\file.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Open" Click="openFileDialog">
+                    <MenuItem.Icon>
+                        <Image Source="Resources\open-folder.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Save" Click="saveFile" >
+                    <MenuItem.Icon>
+                        <Image Source="Resources\save16.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Save As" Click="saveFileDialog">
+                    <MenuItem.Icon>
+                        <Image Source="Resources\saveAs16.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator />
-                <MenuItem Header="_Exit" Click="exitFromApplication"/>
+                <MenuItem Header="_Exit" Click="exitFromApplication">
+                    <MenuItem.Icon>
+                        <Image Source="Resources\cross.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
 
         </Menu>
@@ -23,31 +50,37 @@
 
         <Grid x:Name="layout1" Margin="0,-8,0,0" Background="White">
 
+            <Label  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,0,0"  Height="45" Width="220" FontFamily="Bahnschrift" AutomationProperties.IsRowHeader="True" Background="{x:Null}" Content="Dictionary" FontSize="30" FontWeight="Bold"/>
+            <Label  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,27,0,0"  Height="33" Width="66" FontFamily="Bahnschrift" AutomationProperties.IsRowHeader="True" Background="{x:Null}" Content="Sort" FontSize="24" FontWeight="Normal" FontStyle="Normal"/>
             <Label x:Name="WordsCountLabel" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,210,0,0"  Height="35" Width="160" FontFamily="Cascadia Code ExtraLight" AutomationProperties.IsRowHeader="True" Background="#FFF7F7F7" Content="Word Count: 0"/>
             <Label x:Name="PathLabel" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="158,210,0,0"  Height="35" Width="240" FontFamily="Cascadia Code ExtraLight" AutomationProperties.IsRowHeader="True"  Background="#FFF7F7F7"/>
             <Grid MouseDown="onMouseLeftButtonDown" x:Name="layout2" Visibility="Visible" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="31*"/>
+                    <ColumnDefinition Width="49*"/>
+                </Grid.ColumnDefinitions>
 
 
 
 
-                <StackPanel x:Name="stackPanel1" AllowDrop="True" Drop="dragDrop" GiveFeedback="imagePanel_GiveFeedback" Margin="0,-11,0,0" Background="White" Opacity="0" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave" Visibility="Visible" />
-                <StackPanel AllowDrop="True" Drop="dragDrop" GiveFeedback="imagePanel_GiveFeedback" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave">
+                <StackPanel x:Name="stackPanel1" AllowDrop="True" Drop="dragDrop" GiveFeedback="imagePanel_GiveFeedback" Margin="0,-11,0,0" Background="White" Opacity="0" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave" Visibility="Visible" Grid.ColumnSpan="2" />
+                <StackPanel AllowDrop="True" Drop="dragDrop" GiveFeedback="imagePanel_GiveFeedback" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave" Grid.ColumnSpan="2">
                     <Button x:Name="SortByFirstWord" HorizontalAlignment="Left" VerticalAlignment="Top" Width="90"  Margin="10,65,80,5"  Height="21" Click="sortByWordButton" Content="↓" Background="#FFF7F7F7" FontSize="18" FontFamily="Britannic Bold" FontWeight="Bold" BorderBrush="Black"/>
                     <Button x:Name="SortBySecondWord"  HorizontalAlignment="Left" VerticalAlignment="Top" Width="90"  Margin="100,-26,0,0" Height="21" Click="sortByWordButton" Content="↓" Background="#FFF7F7F7" FontSize="18" FontFamily="Britannic Bold" FontWeight="Bold" BorderBrush="Black"/>
                     <Button Content="-" Width="40" Height ="25" Margin="300,30,0,0" Background="#FFF7F7F7" BorderBrush="Black" FontFamily="Britannic Bold" FontWeight="Bold" Click="removeWordButton"/>
                     <Button Content="+" Width="40" Height ="25" Margin="300,-70,0,0" Background="#FFF7F7F7" BorderBrush="Black" FontFamily="Britannic Bold" FontWeight="Bold" Click="addWordButton"/>
                 </StackPanel>
-                <StackPanel AllowDrop="True" Drop="dragDrop" GiveFeedback="imagePanel_GiveFeedback" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave"  >
+                <StackPanel AllowDrop="True" Drop="dragDrop" GiveFeedback="imagePanel_GiveFeedback" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave" Grid.ColumnSpan="2"  >
 
                     <ScrollViewer Margin="10,92,80,5" Height="109" Foreground="Black" >
                         <StackPanel Background="Transparent" MouseDown="onMouseLeftButtonDown" KeyDown="keyDownTextBox" KeyUp="keyUpTextBox" x:Name="StackPanelWords" Width="323"/>
                     </ScrollViewer>
                     <Border BorderBrush="Black" BorderThickness="1,1,1,1" Margin="9,-120,100,-5" Height="113" />
                 </StackPanel>
-                <StackPanel AllowDrop="True" Drop="dragDrop" GiveFeedback="imagePanel_GiveFeedback" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave">
+                <StackPanel AllowDrop="True" Drop="dragDrop" GiveFeedback="imagePanel_GiveFeedback" DragEnter="layout2_DragEnter" DragLeave="layout2_DragLeave" Grid.ColumnSpan="2">
 
                     <Button  Margin="0,25,18,0" Width="50" Height="35" Click="saveFile" HorizontalAlignment="Right"  VerticalAlignment="Top" BorderBrush="#FF4F83D1">
-                        <Image Source="Resources\disckett.png"></Image>
+                        <Image Source="Resources\save.png" Width="28"></Image>
                     </Button>
                 </StackPanel>
 
