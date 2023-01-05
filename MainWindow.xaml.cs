@@ -50,7 +50,7 @@ namespace DictionarySort
             {
                 using (StreamReader reader = new StreamReader("filePath.txt"))
                 {
-                    bool.TryParse(reader.ReadLine(), out bool r);
+                    bool r = bool.TryParse(reader.ReadLine(), out r)? r : true;
                     PathSave.IsChecked = r;
                     if (PathSave.IsChecked)
                     {
@@ -119,8 +119,8 @@ namespace DictionarySort
                 string ext = System.IO.Path.GetExtension(path);
                 if (ext != ".txt")
                 {
-                    path = "Invalid Type";
-                    throw new InvalidOperationException("Invalid Type");
+                    path = "";
+                    throw new InvalidOperationException("");
                 }
                 using (StreamReader reader = new StreamReader(path))
                 {
