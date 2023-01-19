@@ -49,7 +49,7 @@
         </Menu>
 
 
-        <Grid x:Name="layout1" Margin="0,-8,0,0" Background="White">
+        <Grid x:Name="layout1" Margin="0,-8,0,0"  Height ="254" Background="White">
 
             <Label  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,0,0"  Height="45" Width="220" FontFamily="Bahnschrift" AutomationProperties.IsRowHeader="True" Background="{x:Null}" Content="Dictionary" FontSize="30" FontWeight="Bold"/>
             <Label  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,27,0,0"  Height="33" Width="66" FontFamily="Bahnschrift" AutomationProperties.IsRowHeader="True" Background="{x:Null}" Content="Sort" FontSize="24" FontWeight="Normal" FontStyle="Normal"/>
