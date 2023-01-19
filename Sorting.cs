@@ -57,7 +57,7 @@ namespace DictionarySort
 
     private static void sortBySecondWord(ref List<string> list)
         { 
-            string pattern = @".*\- *";
+            string pattern = @".*[-—]—* *";
             List<string> buffer = new List<string>();
 
             foreach (var item in list)
