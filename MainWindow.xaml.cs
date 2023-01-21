@@ -261,16 +261,13 @@ namespace DictionarySort
         }
         private void wordsShow()
         {
-            int it = 0, start = 0, count = 0 ;
+            int it = 0, start = 0, count = 0;
             labelsFill();
             foreach (var item in (StackPanelWords).Children)
             {
                 if (item is TextBox && it <words.Count)
                 {
-                    TextBox tb = (TextBox)item;
-
-                    tb.IsEnabled = true;
-                    tb.Visibility = Visibility.Visible;
+                    TextBox tb = (TextBox)item;        
                     tb.Text = words[it];
                     it++;
                     start++;
@@ -282,10 +279,8 @@ namespace DictionarySort
                 }
             }
             if (count!=0)
-            {
-               
                 StackPanelWords.Children.RemoveRange(start, count);
-            }
+       
            
             for (; it < words?.Count(); it++)
             {
