@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Documents.Serialization;
 using System.Windows.Input;
@@ -260,17 +261,32 @@ namespace DictionarySort
         }
         private void wordsShow()
         {
-            int it = 0;
+            int it = 0, start = 0, count = 0 ;
             labelsFill();
             foreach (var item in (StackPanelWords).Children)
             {
-                if (item is TextBox)
+                if (item is TextBox && it <words.Count)
                 {
                     TextBox tb = (TextBox)item;
+
+                    tb.IsEnabled = true;
+                    tb.Visibility = Visibility.Visible;
                     tb.Text = words[it];
                     it++;
+                    start++;
+                }
+                else if (item is TextBox)
+                {
+                    count++;
+    
                 }
             }
+            if (count!=0)
+            {
+               
+                StackPanelWords.Children.RemoveRange(start, count);
+            }
+           
             for (; it < words?.Count(); it++)
             {
                 TextBox tx = addNewTextBox(words[it]);       
@@ -389,16 +405,34 @@ namespace DictionarySort
 
         private void layout2_DragEnter(object sender, DragEventArgs e)
         {
-
-            layout2.Opacity = 0.5;      
-            e.Effects = DragDropEffects.None; 
+            layout2.Opacity = 0.5;
+            e.Effects = DragDropEffects.None;
             PathLabel.Content = "DROP IT";
+            foreach (var item in (StackPanelWords).Children)
+            {
+                if (item is TextBox)
+                {
+                    TextBox tx = item as TextBox;
+                    tx.IsHitTestVisible = false;
+                }
+            }
+            
+           
         }
 
         private void layout2_DragLeave(object sender, DragEventArgs e)
         {
+            
             labelsFill();
             layout2.Opacity =1;
+            foreach (var item in (StackPanelWords).Children)
+            {
+                if (item is TextBox)
+                {
+                    TextBox tx = item as TextBox;
+                    tx.IsHitTestVisible = true;
+                }
+            }
         }
         private void uncheckedAllExpectOne(object sender,GroupBox gB)
         {
